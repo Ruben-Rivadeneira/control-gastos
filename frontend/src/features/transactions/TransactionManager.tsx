@@ -1,4 +1,3 @@
-// src/features/transactions/TransactionManager.tsx
 import { useEffect, useState } from "react"
 import { useCategorias } from "../../hook/useCategories"
 import { del, get, post } from "../../services/api"
