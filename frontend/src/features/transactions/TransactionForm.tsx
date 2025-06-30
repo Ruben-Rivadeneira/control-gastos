@@ -18,7 +18,6 @@ const TransactionForm: React.FC = () => {
         date: new Date().toISOString().split('T')[0],
     })
 
-    // 🧪 reemplaza esto por auth real luego
     const userId = '1'
 
     useEffect(() => {
