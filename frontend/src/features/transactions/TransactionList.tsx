@@ -1,4 +1,3 @@
-// src/features/transactions/TransactionList.tsx
 import {
     ArrowDownLeft,
     ArrowUpRight,

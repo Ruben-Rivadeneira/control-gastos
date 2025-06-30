@@ -18,7 +18,7 @@ const TransactionForm: React.FC = () => {
         date: new Date().toISOString().split('T')[0],
     })
 
-    // 🧪 reemplaza esto por auth real luego
+    
     const userId = '1'
 
     useEffect(() => {
@@ -70,7 +70,7 @@ const TransactionForm: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
 
-                    {/* Transaction Type */}
+                    {/* Tipo de transacción */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">Tipo</label>
                         <div className="flex space-x-4">
@@ -103,7 +103,7 @@ const TransactionForm: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Amount */}
+                    {/* Monto */}
                     <div>
                         <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
                             Monto
@@ -123,7 +123,7 @@ const TransactionForm: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Category */}
+                    {/* Categoria */}
                     <div>
                         <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                             Categoría
@@ -144,7 +144,7 @@ const TransactionForm: React.FC = () => {
                         </select>
                     </div>
 
-                    {/* Description */}
+                    {/* Descripcion */}
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                             Descripción
@@ -160,7 +160,7 @@ const TransactionForm: React.FC = () => {
                         />
                     </div>
 
-                    {/* Date */}
+                    {/* Fecha */}
                     <div>
                         <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
                             Fecha

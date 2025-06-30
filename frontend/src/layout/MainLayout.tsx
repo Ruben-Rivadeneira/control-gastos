@@ -1,4 +1,3 @@
-// src/layout/MainLayout.tsx
 import { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import AddTransaction from '../views/AddTransaction'
