@@ -5,9 +5,21 @@ import { db } from '../models/db'
 const router = express.Router()
 
 
-router.get('/', async (_: Request, res: Response) => {
-  const categorias = await db('Category').select()
-  res.json(categorias)
+router.get('/', async (req: any, res: any) => {
+
+  const userId = req.query.id;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'El id de usuario es requerido' });
+  }
+
+  try {
+    const categories = await db('Category').where({ userId: userId });
+    res.json(categories);
+  } catch (err) {
+    console.error('Error fetching categories:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 })
 
 
@@ -19,16 +31,23 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response) => {
 })
 
 router.post('/', async (req, res) => {
-    const { name } = req.body
-    const id = uuidv4()
-    await db('Category').insert({ id, name })
-    res.json({ id, name })
+  const { name, color, type, userId } = req.body
+  const id = uuidv4()
+  const newCategory = {
+    id: uuidv4(),
+    userId: req.body.userId,
+    name,
+    color,
+    type
+  };
+  await db('Category').insert({ id, name, color, type, userId })
+  res.json({ id, name })
 })
 
 router.put('/:id', async (req, res) => {
-    const { name } = req.body
-    await db('Category').where({ id: req.params.id }).update({ name })
-    res.json({ success: true })
+  const { name } = req.body
+  await db('Category').where({ id: req.params.id }).update({ name })
+  res.json({ success: true })
 })
 
 

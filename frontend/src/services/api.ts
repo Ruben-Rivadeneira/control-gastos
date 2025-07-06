@@ -18,3 +18,12 @@ export const del = async (path: string) => {
     const res = await fetch(`${API_URL}${path}`, { method: "DELETE" })
     return res.json()
 }
+
+export const put = async (path: string, data: any) => {
+    const res = await fetch(`${API_URL}${path}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    return res.json();
+}

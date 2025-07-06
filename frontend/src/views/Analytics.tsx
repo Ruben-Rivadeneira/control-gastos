@@ -1,1 +1,8 @@
-export default () => <h2 className="text-2xl font-bold">Analytics</h2>
+import React from "react";
+import Analytics from "../components/analytics/Analytics";
+
+const AnalyticsView: React.FC = () => {
+    return <Analytics />
+}
+
+export default AnalyticsView

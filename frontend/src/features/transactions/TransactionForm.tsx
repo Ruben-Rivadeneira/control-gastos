@@ -1,40 +1,48 @@
-import { Plus } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import { get, post } from '../../services/api'
+import { Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { get, post } from '../../services/api';
 
 type Category = {
-    id: string
-    name: string
-    type: 'income' | 'expense'
-}
+    id: string;
+    name: string;
+    type: 'ingreso' | 'gasto';
+};
 
 const TransactionForm: React.FC = () => {
-    const [categories, setCategories] = useState<Category[]>([])
+    const { user } = useAuth();
+    const [categories, setCategories] = useState<Category[]>([]);
     const [formData, setFormData] = useState({
-        type: 'expense' as 'income' | 'expense',
+        type: 'gasto' as 'ingreso' | 'gasto',
         amount: '',
         categoryId: '',
         description: '',
         date: new Date().toISOString().split('T')[0],
-    })
-
-    
-    const userId = '1'
+    });
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const data = await get('/categories')
-            setCategories(data)
-        }
-        fetchCategories()
-    }, [])
+            if (!user?.id) return;
 
-    const availableCategories = categories
+            try {
+                const data = await get(`/categories?id=${user.id}`);
+                if (Array.isArray(data)) {
+                    setCategories(data);
+                } else {
+                    console.error('Respuesta inesperada de categorías:', data);
+                }
+            } catch (err) {
+                console.error('Error al cargar categorías:', err);
+            }
+        };
+
+        fetchCategories();
+    }, [user]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        if (!formData.amount || !formData.categoryId || !formData.description) return
+        if (!formData.amount || !formData.categoryId || !formData.description || !user?.id) return;
 
         await post('/transactions', {
             type: formData.type,
@@ -42,23 +50,23 @@ const TransactionForm: React.FC = () => {
             categoryId: formData.categoryId,
             description: formData.description,
             date: formData.date,
-            userId,
-        })
+            userId: user.id,
+        });
 
         setFormData({
-            type: 'expense',
+            type: 'gasto',
             amount: '',
             categoryId: '',
             description: '',
             date: new Date().toISOString().split('T')[0],
-        })
+        });
 
-        alert('Transacción registrada')
-    }
+        alert('Transacción registrada');
+    };
 
     const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }))
-    }
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
 
     return (
         <div className="space-y-6">
@@ -69,37 +77,32 @@ const TransactionForm: React.FC = () => {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <form onSubmit={handleSubmit} className="space-y-6">
-
-                    {/* Tipo de transacción */}
+                    {/* Tipo */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-3">Tipo</label>
                         <div className="flex space-x-4">
-                            <button
-                                type="button"
-                                onClick={() => handleInputChange('type', 'income')}
-                                className={`flex-1 p-4 rounded-lg border-2 ${formData.type === 'income'
-                                        ? 'border-green-500 bg-green-50 text-green-700'
-                                        : 'border-gray-200 bg-white text-gray-700'
-                                    }`}
-                            >
-                                <div className="text-center">
-                                    <div className="text-lg font-semibold">Ingreso</div>
-                                    <div className="text-sm">Dinero recibido</div>
-                                </div>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => handleInputChange('type', 'expense')}
-                                className={`flex-1 p-4 rounded-lg border-2 ${formData.type === 'expense'
-                                        ? 'border-red-500 bg-red-50 text-red-700'
-                                        : 'border-gray-200 bg-white text-gray-700'
-                                    }`}
-                            >
-                                <div className="text-center">
-                                    <div className="text-lg font-semibold">Egreso</div>
-                                    <div className="text-sm">Gasto o salida</div>
-                                </div>
-                            </button>
+                            {(['ingreso', 'gasto'] as const).map((type) => (
+                                <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => handleInputChange('type', type)}
+                                    className={`flex-1 p-4 rounded-lg border-2 ${formData.type === type
+                                            ? type === 'ingreso'
+                                                ? 'border-green-500 bg-green-50 text-green-700'
+                                                : 'border-red-500 bg-red-50 text-red-700'
+                                            : 'border-gray-200 bg-white text-gray-700'
+                                        }`}
+                                >
+                                    <div className="text-center">
+                                        <div className="text-lg font-semibold">
+                                            {type === 'ingreso' ? 'Ingreso' : 'Egreso'}
+                                        </div>
+                                        <div className="text-sm">
+                                            {type === 'ingreso' ? 'Dinero recibido' : 'Gasto o salida'}
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -123,7 +126,7 @@ const TransactionForm: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Categoria */}
+                    {/* Categoría */}
                     <div>
                         <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                             Categoría
@@ -136,15 +139,17 @@ const TransactionForm: React.FC = () => {
                             required
                         >
                             <option value="">Selecciona una categoría</option>
-                            {availableCategories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.name}
-                                </option>
-                            ))}
+                            {categories
+                                .filter((cat) => cat.type === formData.type)
+                                .map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
                         </select>
                     </div>
 
-                    {/* Descripcion */}
+                    {/* Descripción */}
                     <div>
                         <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
                             Descripción
@@ -175,21 +180,21 @@ const TransactionForm: React.FC = () => {
                         />
                     </div>
 
-                    {/* Submit */}
+                    {/* Botón */}
                     <button
                         type="submit"
-                        className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition ${formData.type === 'income'
+                        className={`w-full flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition ${formData.type === 'ingreso'
                                 ? 'bg-green-600 hover:bg-green-700 text-white'
                                 : 'bg-red-600 hover:bg-red-700 text-white'
                             }`}
                     >
                         <Plus className="w-5 h-5" />
-                        <span>Agregar {formData.type === 'income' ? 'Ingreso' : 'Egreso'}</span>
+                        <span>Agregar {formData.type === 'ingreso' ? 'Ingreso' : 'Egreso'}</span>
                     </button>
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default TransactionForm
+export default TransactionForm;

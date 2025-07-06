@@ -1,1 +1,5 @@
-export default () => <h2 className="text-2xl font-bold">Dashboard</h2>
+import Dashboard from '../components/dashboard/Dashboard'
+
+export default function DashboardView() {
+    return <Dashboard />
+}
