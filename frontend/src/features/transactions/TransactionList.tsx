@@ -26,7 +26,13 @@ const TransactionList: React.FC = () => {
     useEffect(() => {
         const fetchTransactions = async () => {
             const data = await get('/transactions')
-            setTransactions(data)
+
+            const formatted = data.map((t: any) => ({
+                ...t,
+                type: t.type === 'ingreso' ? 'income' : 'expense',
+            }));
+
+            setTransactions(formatted);
         }
         fetchTransactions()
     }, [])

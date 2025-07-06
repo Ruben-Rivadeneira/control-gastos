@@ -9,14 +9,11 @@ export interface Transaction {
   userId: string;
 }
 
-export interface PurchaseItem {
+export interface Product {
   id: string;
   name: string;
   price: number;
   category: string;
-  priority: 'low' | 'medium' | 'high';
-  notes?: string;
-  createdAt: string;
   userId: string;
 }
 

@@ -1,18 +1,24 @@
-import React, { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  type ReactNode,
+} from 'react';
 import { get } from '../services/api';
-import type { Category, PurchaseItem, Transaction } from '../types';
+import type { Category, Product, Transaction } from '../types';
 import { useAuth } from './AuthContext';
 
 interface AppState {
   transactions: Transaction[];
-  purchaseItems: PurchaseItem[];
+  purchaseItems: Product[];
   categories: Category[];
 }
 
 type AppAction =
   | { type: 'ADD_TRANSACTION'; payload: Transaction }
   | { type: 'DELETE_TRANSACTION'; payload: string }
-  | { type: 'ADD_PURCHASE_ITEM'; payload: PurchaseItem }
+  | { type: 'ADD_PURCHASE_ITEM'; payload: Product }
   | { type: 'DELETE_PURCHASE_ITEM'; payload: string }
   | { type: 'ADD_CATEGORY'; payload: Category }
   | { type: 'UPDATE_CATEGORY'; payload: Category }
@@ -112,8 +118,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
         dispatch({ type: 'LOAD_CATEGORIES', payload: categories });
         dispatch({ type: 'LOAD_TRANSACTIONS', payload: transactions });
+        console.log('[AppContext] Datos cargados correctamente');
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error('[AppContext] Error al cargar datos:', error);
       }
     };
 
